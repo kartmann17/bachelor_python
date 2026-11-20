@@ -1,7 +1,7 @@
 from django import forms
 from django.utils import timezone
 
-from .models import Screening
+from .models import Room, Screening
 
 from .reservations import MAX_PLACES
 
@@ -60,3 +60,7 @@ class ScreeningForm(forms.ModelForm):
         model = Screening
         fields = ["film", "room", "starts_at", "capacity", "price"]
         widgets = {"starts_at": forms.DateTimeInput(format="%Y-%m-%dT%H:%M", attrs={"type": "datetime-local"})}
+
+
+class RoomFilter(forms.Form):
+    room = forms.ModelChoiceField(label="Salle", queryset=Room.objects.all(), empty_label="Toutes les salles", required=False)
