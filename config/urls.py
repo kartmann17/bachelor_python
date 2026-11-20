@@ -29,5 +29,6 @@ urlpatterns = [
     path("gestion/programmation/", management_views.schedule, name="schedule"),
     path("gestion/programmation/nouvelle/", management_views.schedule_create, name="schedule_create"),
     path("gestion/programmation/<int:screening_id>/publier/", management_views.schedule_publish, name="schedule_publish"),
+    path("gestion/programmation/<int:screening_id>/modifier/", management_views.schedule_edit, name="schedule_edit"),
     path("api/", api.urls),
 ]

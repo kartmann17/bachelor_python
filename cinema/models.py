@@ -132,3 +132,15 @@ class Ticket(models.Model):
 
     class Meta:
         ordering = ["pk"]
+
+
+class ScheduleChange(models.Model):
+    screening = models.ForeignKey(Screening, on_delete=models.PROTECT, related_name="changes")
+    actor = models.ForeignKey("auth.User", null=True, on_delete=models.SET_NULL)
+    before = models.JSONField()
+    after = models.JSONField()
+    affected_bookings = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at", "-pk"]

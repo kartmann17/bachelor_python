@@ -1,10 +1,12 @@
 from datetime import timedelta
 
 from django.db import transaction
+from django.db.models import Count, Sum
 from django.utils import timezone
 
-from .models import Room, Screening
-from .reservations import BookingError
+from .inventory import active_reservations
+from .models import Reservation, Room, ScheduleChange, Screening
+from .reservations import PAYMENT_LEAD, BookingError, payment_deadline
 
 
 def _end_time(data):
@@ -50,4 +52,53 @@ def publish(screening_id):
     screening.status = Screening.Status.PUBLISHED
     screening.revision += 1
     screening.save(update_fields=["status", "revision"])
+    return screening
+
+
+def snapshot(data):
+    return {
+        "film": data["film"].pk, "room": data["room"].pk,
+        "starts_at": data["starts_at"].isoformat(), "capacity": data["capacity"], "price": str(data["price"]),
+    }
+
+
+def schedule_impact(screening, at=None):
+    reservations = screening.reservations.filter(active_reservations(at or timezone.now()))
+    return reservations.aggregate(bookings=Count("pk"), places=Sum("quantity", default=0))
+
+
+@transaction.atomic
+def update_screening(screening_id, data, actor, revision, expected_impact):
+    lock_scheduling_rooms()
+    screening = Screening.objects.select_related("film", "room").select_for_update(of=("self",)).get(
+        pk=screening_id,
+    )
+    now = timezone.now()
+    impact = schedule_impact(screening, now)
+    if revision != screening.revision or expected_impact != impact:
+        raise BookingError("La séance ou ses réservations ont changé. Vérifiez à nouveau l’impact.")
+    if screening.status == Screening.Status.CANCELLED or screening.starts_at <= now:
+        raise BookingError("Cette séance ne peut plus être modifiée.")
+    if data["capacity"] < impact["places"]:
+        raise BookingError("La jauge ne peut pas être inférieure aux places déjà attribuées.")
+    _validate_schedule(data, screening.status, exclude=screening.pk)
+
+    previous_deadline = payment_deadline(screening)
+    next_deadline = data["starts_at"] - PAYMENT_LEAD
+    pending = screening.reservations.filter(status=Reservation.Status.RESERVED, expires_at__gt=now)
+    if previous_deadline != next_deadline:
+        if next_deadline <= now and pending.exists():
+            raise BookingError("Ce nouvel horaire ferait expirer des réservations actives.")
+        pending.update(expires_at=next_deadline)
+
+    before = snapshot({field: getattr(screening, field) for field in data})
+    for field, value in data.items():
+        setattr(screening, field, value)
+    screening.ends_at = _end_time(data)
+    screening.revision += 1
+    screening.save()
+    ScheduleChange.objects.create(
+        screening=screening, actor=actor, before=before, after=snapshot(data),
+        affected_bookings=impact["bookings"],
+    )
     return screening
