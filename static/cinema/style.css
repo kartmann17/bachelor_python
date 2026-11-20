@@ -109,3 +109,7 @@ th { color: var(--muted); font-size: .83rem; }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 .page-title { font-size: clamp(2.3rem, 5vw, 4.3rem); }
 code { overflow-wrap: anywhere; }
+.staff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 15px; }
+.staff-card { text-decoration: none; }
+.staff-card h2 { font-size: 1.7rem; }
+.staff-card span { color: var(--muted); }
