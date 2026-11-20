@@ -19,6 +19,13 @@
       {% block navigation %}
       <nav aria-label="Navigation principale">
         <a href="{% url 'programme' %}#seances">Programme</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'my_bookings' %}">Mes réservations</a>
+          {% block staff_navigation %}{% endblock %}
+          <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit" class="link">Déconnexion</button></form>
+        {% else %}
+          <a class="button secondary" href="{% url 'login' %}">Connexion</a>
+        {% endif %}
       </nav>
       {% endblock %}
     </div>

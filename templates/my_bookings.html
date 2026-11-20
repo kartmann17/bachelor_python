@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Mes réservations · Le Grand Cinéma{% endblock %}
+{% block content %}
+<section class="wrap shell">
+  <h1 class="page-title">Mes réservations</h1>
+  <div class="panel table-scroll">
+    <table>
+      <thead><tr><th>Film</th><th>Séance</th><th>Places</th><th>Statut</th><th>Billets</th></tr></thead>
+      <tbody>
+      {% for booking in bookings %}
+        <tr><td>{{ booking.screening.film }}</td><td>{{ booking.screening.starts_at|date:"d/m/Y H:i" }}</td><td>{{ booking.quantity }}</td><td>{{ booking.get_status_display }}</td><td><a href="{% url 'booking_detail' booking.reference %}">Voir la réservation</a></td></tr>
+      {% empty %}<tr><td colspan="5">Vous n’avez encore aucune réservation.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

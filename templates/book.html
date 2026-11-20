@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Réserver · {{ screening.film }}{% endblock %}
+{% block content %}
+<section class="wrap shell">
+  <h1 class="page-title">{{ screening.film }}</h1>
+  <p>{{ screening.starts_at|date:"l j F à H:i"|capfirst }} · {{ screening.room }} · {{ screening.room.format }}</p>
+  <div class="panel narrow">
+    <h2>Réserver des places</h2>
+    <p>{{ screening.price }} € par place</p>
+    {% if screening.future and screening.available and screening.status == 'published' %}
+      <form method="post" class="stack">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="button" type="submit">Confirmer la réservation</button>
+      </form>
+    {% else %}
+      <p class="notice error">{{ form.non_field_errors|striptags|default:"La réservation est indisponible pour cette séance." }}</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
