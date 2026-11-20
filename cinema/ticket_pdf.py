@@ -19,25 +19,21 @@ def ticket_pdf(ticket):
     pdf.setFont("Helvetica-Bold", 19)
     pdf.drawString(24, 269, "Le Grand Cinéma")
     pdf.setFillColor(HexColor("#1b251c"))
-    pdf.setFont("Helvetica-Bold", 19)
-    title = pdf.beginText(24, 216)
-    title.setFont("Helvetica-Bold", 15)
-    current_line = ""
-    for word in screening.film.title.split():
-        candidate = f"{current_line} {word}".strip()
-        if current_line and pdf.stringWidth(candidate, "Helvetica-Bold", 15) > 256:
-            title.textLine(current_line)
-            current_line = word
-        else:
-            current_line = candidate
-    title.textLine(current_line)
-    pdf.drawText(title)
+    font = "Helvetica-Bold"
+    title = screening.film.title
+    size = min(19, 19 * 254 / max(254, pdf.stringWidth(title, font, 19)))
+    pdf.setFont(font, size)
+    pdf.drawString(24, 204, title)
 
     starts = timezone.localtime(screening.starts_at)
     pdf.setFont("Helvetica", 12)
     pdf.drawString(24, 162, f"{starts:%d/%m/%Y à %H:%M}")
-    pdf.drawString(24, 142, str(screening.room))
-    pdf.drawString(24, 122, f"Statut : {booking.effective_label}")
+    room = str(screening.room)
+    room_size = min(12, 12 * 254 / max(254, pdf.stringWidth(room, "Helvetica", 12)))
+    pdf.setFont("Helvetica", room_size)
+    pdf.drawString(24, 142, room)
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(24, 122, f"Réservation : {booking.effective_label}")
     pdf.drawString(24, 102, f"Tarif : {booking.unit_price:.2f} EUR")
     pdf.setFont("Helvetica", 9)
     pdf.drawString(24, 59, "Référence du billet")

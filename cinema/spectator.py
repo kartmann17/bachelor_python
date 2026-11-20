@@ -2,7 +2,6 @@ import uuid
 
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -14,14 +13,14 @@ from .inventory import with_inventory
 from .models import Reservation, Screening, Ticket
 from .reservations import PAYMENT_LOCATION, BookingError, payment_deadline, reserve
 from .ticket_pdf import ticket_pdf
-from .web_forms import BookingForm
+from .web_forms import BookingForm, SpectatorSignupForm
 
 
 @require_http_methods(["GET", "HEAD", "POST"])
 def signup(request):
     if request.user.is_authenticated:
         return redirect("programme")
-    form = UserCreationForm(request.POST if request.method == "POST" else None)
+    form = SpectatorSignupForm(request.POST if request.method == "POST" else None)
     if request.method == "POST" and form.is_valid():
         login(request, form.save())
         return redirect("programme")

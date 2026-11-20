@@ -5,11 +5,18 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.cache import never_cache
-from django.views.decorators.http import require_POST, require_http_methods, require_safe
+from django.views.decorators.http import require_http_methods, require_POST, require_safe
 
 from .access import ACCUEIL, EXPLOITATION, GUICHET, PROGRAMMATION, requires_any_role, requires_role
 from .models import Reservation
-from .reservations import PAYMENT_LOCATION, BookingError, cancel_booking, check_ticket, register_payment, reserve
+from .reservations import (
+    PAYMENT_LOCATION,
+    BookingError,
+    cancel_booking,
+    check_ticket,
+    register_payment,
+    reserve,
+)
 from .web_forms import BookingLookupForm, CheckTicketForm, DeskSaleForm
 
 

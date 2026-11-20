@@ -12,7 +12,6 @@ from .models import Screening, Ticket
 from .programme import selected_date
 from .web_forms import RoomFilter
 
-
 SATURATION_PERCENT = 90
 
 

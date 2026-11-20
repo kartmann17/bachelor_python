@@ -1,9 +1,17 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from django.utils import timezone
 
 from .models import Room, Screening
-
 from .reservations import MAX_PLACES
+
+
+class SpectatorSignupForm(UserCreationForm):
+    def clean_username(self):
+        name = super().clean_username()
+        if name.casefold() in {"spectateur", "equipe"}:
+            raise forms.ValidationError("Ce nom est réservé à la démonstration.")
+        return name
 
 
 class BookingForm(forms.Form):

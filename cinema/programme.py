@@ -15,7 +15,9 @@ def selected_date(request):
     value = request.GET.get("date")
     if value:
         try:
-            return date.fromisoformat(value)
+            day = date.fromisoformat(value)
+            if date(1900, 1, 1) <= day <= date(9999, 12, 25):
+                return day
         except ValueError:
             pass
     return today

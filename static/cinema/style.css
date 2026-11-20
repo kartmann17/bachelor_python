@@ -56,10 +56,11 @@ button.link { background: transparent; color: var(--ink); padding-inline: 0; min
 .film, .panel, .empty { background: var(--panel); border: 1px solid var(--edge); border-radius: 10px; }
 .film { overflow: hidden; }
 .film-art { aspect-ratio: 16/10; background-color: #3b5038; background-size: cover; background-position: center; }
-.art-1 { background-image: url("art/metro.webp"); }
-.art-2 { background-image: url("art/jazz.webp"); }
-.art-3 { background-image: url("art/montagne.webp"); }
-.art-4 { background-image: url("art/cote.webp"); }
+.art-1, .art-2, .art-3, .art-4 { background-image: url("art/films.webp"); background-size: 200% 200%; }
+.art-1 { background-position: 0 0; }
+.art-2 { background-position: 100% 0; }
+.art-3 { background-position: 0 100%; }
+.art-4 { background-position: 100% 100%; }
 .film-copy { padding: 16px; }
 .film-meta { color: var(--muted); margin-bottom: 5px; font-size: .74rem; }
 .slot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; border-top: 1px solid var(--edge); padding-block: 9px; }
