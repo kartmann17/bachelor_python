@@ -4,6 +4,8 @@
     <small>Séance commencée</small>
   {% elif not screening.available %}
     <span class="badge alert">Complet</span>
+  {% elif not screening.online_open %}
+    <small>Guichet uniquement</small>
   {% else %}
     <small>{{ screening.available }} place{{ screening.available|pluralize }} disponible{{ screening.available|pluralize }}</small>
     <a class="button secondary" href="{% url 'book' screening.pk %}" aria-label="Réserver {{ screening.film }} à {{ screening.starts_at|date:'H:i' }}">Réserver</a>

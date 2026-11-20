@@ -37,7 +37,7 @@ def ticket_pdf(ticket):
     pdf.setFont("Helvetica", 12)
     pdf.drawString(24, 162, f"{starts:%d/%m/%Y à %H:%M}")
     pdf.drawString(24, 142, str(screening.room))
-    pdf.drawString(24, 122, f"Statut : {booking.get_status_display()}")
+    pdf.drawString(24, 122, f"Statut : {booking.effective_label}")
     pdf.drawString(24, 102, f"Tarif : {booking.unit_price:.2f} EUR")
     pdf.setFont("Helvetica", 9)
     pdf.drawString(24, 59, "Référence du billet")

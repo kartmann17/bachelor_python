@@ -7,6 +7,7 @@ from django.views.decorators.http import require_safe
 
 from .inventory import with_inventory
 from .models import Film, Screening
+from .reservations import payment_deadline
 
 
 def selected_date(request):
@@ -29,7 +30,9 @@ def programme(request):
         .filter(status=Screening.Status.PUBLISHED, starts_at__date=day)
     )
     by_film = defaultdict(list)
+    now = timezone.now()
     for screening in screenings:
+        screening.online_open = payment_deadline(screening) > now
         by_film[screening.film].append(screening)
     featured = Film.objects.filter(featured=True, pk__in=[film.pk for film in by_film]).first()
     start = day if day < today or day > today + timedelta(days=6) else today
@@ -37,6 +40,6 @@ def programme(request):
         "day": day, "dates": [start + timedelta(days=i) for i in range(7)],
         "films": by_film.items(), "featured": featured,
         "featured_screening": next(
-            (session for session in by_film.get(featured, []) if session.future), None,
+            (session for session in by_film.get(featured, []) if session.online_open and session.available), None,
         ),
     })

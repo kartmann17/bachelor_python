@@ -7,7 +7,13 @@
   <div class="panel narrow">
     <h2>Réserver des places</h2>
     <p>{{ screening.price }} € par place</p>
-    {% if screening.future and screening.available and screening.status == 'published' %}
+    <dl class="details">
+      <dt>Règlement</dt><dd>{{ payment_location }}</dd>
+      <dt>Heure limite</dt><dd>{{ payment_deadline|date:"d/m/Y à H:i" }}</dd>
+      <dt>Disponibilité</dt><dd>{{ screening.available }} place{{ screening.available|pluralize }}</dd>
+    </dl>
+    <p class="muted">Les places sont libérées si la réservation reste impayée à l’heure limite.</p>
+    {% if can_book and screening.status == 'published' %}
       <form method="post" class="stack">
         {% csrf_token %}
         {{ form.as_p }}

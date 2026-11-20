@@ -5,13 +5,17 @@
   <h1 class="page-title">Ma réservation</h1>
   <div class="panel narrow">
     <h2>{{ booking.screening.film }}</h2>
-    <span class="badge">{{ booking.get_status_display }}</span>
+    <span class="badge">{{ booking.effective_label }}</span>
     <dl class="details">
       <dt>Référence</dt><dd><code>{{ booking.reference }}</code></dd>
       <dt>Séance</dt><dd>{{ booking.screening.starts_at|date:"l j F à H:i"|capfirst }}</dd>
       <dt>Salle</dt><dd>{{ booking.screening.room }}</dd>
       <dt>Places</dt><dd>{{ booking.quantity }}</dd>
-      <dt>Total</dt><dd>{{ booking.total }} €</dd>
+      <dt>Tarif</dt><dd>{{ booking.unit_price }} € par place · {{ booking.total }} € au total</dd>
+      {% if booking.expires_at %}
+        <dt>Règlement</dt><dd>{{ payment_location }}</dd>
+        <dt>Heure limite</dt><dd>{{ booking.expires_at|date:"d/m/Y à H:i" }}</dd>
+      {% endif %}
     </dl>
     {% block booking_extra %}{% include '_ticket_list.html' %}{% endblock %}
   </div>

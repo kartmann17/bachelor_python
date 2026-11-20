@@ -28,7 +28,7 @@ class BookingRequest(Schema):
 class BookingResponse(Schema):
     reference: UUID
     screening_id: int
-    status: str
+    status: str = Field(validation_alias='effective_status')
     quantity: int
     total: Decimal
 
@@ -40,7 +40,7 @@ class ErrorResponse(Schema):
 @api.post(
     "/reservations/",
     auth=django_auth,
-    response={200: BookingResponse, 201: BookingResponse, 401: ErrorResponse, 403: ErrorResponse,
+    response={200: BookingResponse, 201: BookingResponse, 400: ErrorResponse, 401: ErrorResponse, 403: ErrorResponse,
               404: ErrorResponse, 409: ErrorResponse},
     summary="Réserver des places en ligne",
 )
