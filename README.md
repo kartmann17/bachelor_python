@@ -31,10 +31,7 @@ python manage.py seed_demo
 python manage.py runserver 127.0.0.1:8000
 ```
 
-| Profil local | Identifiant | Mot de passe de démonstration |
-| --- | --- | --- |
-| Spectateur | `spectateur` | `Seance-Metro-2026!` |
-| Équipe | `equipe` | `Guichet-Cinema-2026!` |
+
 
 L’identifiant d’équipe réunit les quatre groupes métier pour la démonstration.
 L’écran **Espace équipe** ouvre les outils de guichet, de contrôle, de programmation
