@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Modifier une séance · Le Grand Cinéma{% endblock %}
+{% block content %}
+<section class="wrap shell">
+  {% include "_staff_links.html" %}
+  <h1 class="page-title">Modifier une séance</h1>
+  <p class="notice"><strong>{{ impact.bookings }}</strong> réservation{{ impact.bookings|pluralize }} active{{ impact.bookings|pluralize }} concernée{{ impact.bookings|pluralize }} · {{ impact.places }} place{{ impact.places|pluralize }} attribuée{{ impact.places|pluralize }}.</p>
+  <div class="panel narrow">
+    {% if confirmation %}
+      <h2>Confirmer la modification</h2>
+      <dl class="details">
+        <dt>Film</dt><dd>{{ form.cleaned_data.film }}</dd>
+        <dt>Salle</dt><dd>{{ form.cleaned_data.room }}</dd>
+        <dt>Nouvel horaire</dt><dd>{{ form.cleaned_data.starts_at|date:"d/m/Y H:i" }}</dd>
+        <dt>Jauge</dt><dd>{{ form.cleaned_data.capacity }}</dd>
+        <dt>Tarif pour les nouvelles réservations</dt><dd>{{ form.cleaned_data.price }} €</dd>
+      </dl>
+      <form method="post" class="inline">
+        {% csrf_token %}
+        {% for field in form %}{{ field.as_hidden }}{% endfor %}
+        <input type="hidden" name="confirmation" value="{{ confirmation }}">
+        <button type="submit">Confirmer la modification</button>
+        <a href="{% url 'schedule_edit' screening.pk %}">Revenir à la séance</a>
+      </form>
+    {% else %}
+      <form method="post" class="stack">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button">Vérifier l’impact</button>
+      </form>
+    {% endif %}
+  </div>
+  {% if history %}
+    <h2 class="section-table">Historique</h2>
+    <ul>
+      {% for change in history %}
+        <li>{{ change.created_at|date:"d/m/Y H:i" }} · {{ change.actor|default:"Compte supprimé" }} · {{ change.affected_bookings }} réservation{{ change.affected_bookings|pluralize }} concernée{{ change.affected_bookings|pluralize }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</section>
+{% endblock %}

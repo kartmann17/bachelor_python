@@ -22,7 +22,7 @@
             {% if screening.status == 'draft' and screening.future %}
               <form method="post" action="{% url 'schedule_publish' screening.pk %}">{% csrf_token %}<button type="submit">Publier</button></form>
             {% endif %}
-            {% block extra_action %}{% endblock %}
+            {% if screening.future and screening.status != 'cancelled' %}<a href="{% url 'schedule_edit' screening.pk %}">Modifier</a>{% endif %}
           </td>
         </tr>
       {% empty %}<tr><td colspan="6">Aucune séance enregistrée pour cette date.</td></tr>{% endfor %}
