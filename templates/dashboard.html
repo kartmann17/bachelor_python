@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Remplissage · Le Grand Cinéma{% endblock %}
+{% block content %}
+<section class="wrap shell">
+  {% include "_staff_links.html" %}
+  <h1 class="page-title">Remplissage des séances</h1>
+  <form method="get" class="filters">
+    <label>Date <input type="date" name="date" value="{{ day|date:'Y-m-d' }}" required></label>
+    <label for="{{ form.room.id_for_label }}">Salle {{ form.room }}</label>
+    <button class="button secondary" type="submit">Filtrer</button>
+  </form>
+  {{ form.room.errors }}
+  <div class="panel table-scroll section-table">
+    <table>
+      <thead><tr><th>Film</th><th>Horaire</th><th>Salle</th><th>Jauge</th><th>Places attribuées</th><th>Disponibles</th><th>Entrées</th><th>Remplissage réel</th></tr></thead>
+      <tbody>
+      {% for screening in screenings %}
+        <tr>
+          <td>{{ screening.film }}</td><td>{{ screening.starts_at|date:"H:i" }}</td><td>{{ screening.room }}</td>
+          <td>{{ screening.capacity }}</td><td>{{ screening.allocated }}</td><td>{{ screening.available }}</td>
+          <td>{{ screening.admitted }}</td><td>{{ screening.fill_rate|floatformat:"-1" }} %</td>
+        </tr>
+      {% empty %}<tr><td colspan="8">Aucune séance publiée ne correspond aux filtres.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

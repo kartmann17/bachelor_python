@@ -3,4 +3,5 @@
   {% if guichet %}<a href="{% url 'desk_sale' %}">Vente au guichet</a><a href="{% url 'desk_lookup' %}">Rechercher une réservation</a>{% endif %}
   {% if accueil %}<a href="{% url 'check_in' %}">Contrôle des billets</a>{% endif %}
   {% if programmation %}<a href="{% url 'schedule' %}">Programmation</a>{% endif %}
+  {% if exploitation %}<a href="{% url 'dashboard' %}">Remplissage</a>{% endif %}
 </nav>

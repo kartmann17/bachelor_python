@@ -2,7 +2,7 @@ from django.contrib.auth import views as auth_views
 from django.http import HttpResponse
 from django.urls import path
 
-from cinema import management_views, programme, spectator, staff
+from cinema import management_views, programme, reporting, spectator, staff
 from cinema.api import api
 
 
@@ -30,5 +30,6 @@ urlpatterns = [
     path("gestion/programmation/nouvelle/", management_views.schedule_create, name="schedule_create"),
     path("gestion/programmation/<int:screening_id>/publier/", management_views.schedule_publish, name="schedule_publish"),
     path("gestion/programmation/<int:screening_id>/modifier/", management_views.schedule_edit, name="schedule_edit"),
+    path("gestion/remplissage/", reporting.dashboard, name="dashboard"),
     path("api/", api.urls),
 ]
