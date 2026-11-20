@@ -1,3 +1,6 @@
+import uuid
+
+
 from django.db import models
 from django.db.models import F, Q
 from django.utils import timezone
@@ -57,8 +60,51 @@ class Screening(models.Model):
         ]
 
     @property
+    def available(self):
+        return max(0, self.capacity - self.allocated)
+
+    @property
     def future(self):
         return self.starts_at > timezone.now()
 
     def __str__(self):
         return f"{self.film} · {timezone.localtime(self.starts_at):%d/%m/%Y %H:%M}"
+
+
+class Reservation(models.Model):
+    class Status(models.TextChoices):
+        RESERVED = "reserved", "Réservée"
+        PAID = "paid", "Réglée"
+        EXPIRED = "expired", "Expirée"
+        CANCELLED = "cancelled", "Annulée"
+
+    class Channel(models.TextChoices):
+        WEB = "web", "En ligne"
+        DESK = "desk", "Guichet"
+
+    reference = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    request_key = models.UUIDField(unique=True, editable=False)
+    screening = models.ForeignKey(Screening, on_delete=models.PROTECT, related_name="reservations")
+    customer = models.ForeignKey(
+        "auth.User", null=True, blank=True, on_delete=models.SET_NULL, related_name="reservations",
+    )
+    created_by = models.ForeignKey("auth.User", null=True, on_delete=models.SET_NULL, related_name="+")
+    quantity = models.PositiveSmallIntegerField("places")
+    unit_price = models.DecimalField("tarif unitaire", max_digits=6, decimal_places=2)
+    channel = models.CharField(max_length=4, choices=Channel)
+    status = models.CharField(max_length=10, choices=Status)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at", "-pk"]
+        indexes = [models.Index(fields=["screening", "status", "expires_at"])]
+        constraints = [
+            models.CheckConstraint(condition=Q(quantity__gt=0), name="reservation_quantity_positive"),
+            models.CheckConstraint(condition=Q(unit_price__gte=0), name="reservation_price_nonnegative"),
+        ]
+
+    @property
+    def total(self):
+        return self.quantity * self.unit_price
