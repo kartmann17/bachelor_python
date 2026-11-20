@@ -108,3 +108,13 @@ class Reservation(models.Model):
     @property
     def total(self):
         return self.quantity * self.unit_price
+
+
+class Ticket(models.Model):
+    reference = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    reservation = models.ForeignKey(Reservation, on_delete=models.PROTECT, related_name="tickets")
+    used_at = models.DateTimeField(null=True, blank=True)
+    checked_by = models.ForeignKey("auth.User", null=True, blank=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        ordering = ["pk"]
