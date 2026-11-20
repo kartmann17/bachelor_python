@@ -127,3 +127,18 @@ def check_ticket(reference, screening_id, agent):
     ticket.save(update_fields=["used_at", "checked_by"])
     logger.info("ticket_checked screening=%s", screening.pk)
     return ticket
+
+
+@transaction.atomic
+def cancel_booking(reference, actor):
+    booking = locked_booking(reference)
+    if booking.status == Reservation.Status.CANCELLED:
+        return False
+    if booking.effective_status == Reservation.Status.EXPIRED:
+        raise BookingError("Cette réservation a déjà expiré.")
+    if booking.screening.starts_at <= timezone.now() or booking.tickets.filter(used_at__isnull=False).exists():
+        raise BookingError("Cette réservation ne peut plus être annulée.")
+    booking.status = Reservation.Status.CANCELLED
+    booking.save(update_fields=["status"])
+    logger.info("booking_cancelled booking=%s actor=%s", booking.pk, actor.pk)
+    return True
