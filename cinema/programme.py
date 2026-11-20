@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.http import require_safe
 
+from .inventory import with_inventory
 from .models import Film, Screening
 
 
@@ -23,7 +24,7 @@ def selected_date(request):
 def programme(request):
     today = timezone.localdate()
     day = selected_date(request)
-    screenings = (
+    screenings = with_inventory(
         Screening.objects.select_related("film", "room")
         .filter(status=Screening.Status.PUBLISHED, starts_at__date=day)
     )
