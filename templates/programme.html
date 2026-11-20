@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero{% if featured %} hero-featured{% endif %}">
+  <div class="wrap hero-copy">
+    {% if featured %}
+      <p class="eyebrow">En vedette</p>
+      <h1>{{ featured.title }}</h1>
+      <p class="hero-meta">{{ featured.genre }} <span aria-hidden="true">·</span> {{ featured.duration }} min</p>
+      <p class="hero-description">{{ featured.description }}</p>
+    {% else %}
+      <h1>Le Grand Cinéma</h1>
+      <p class="hero-description">Consultez les horaires et réservez vos places.</p>
+    {% endif %}
+    <a class="button" href="#seances">Voir les séances</a>
+  </div>
+</section>
+<section class="wrap programme" id="seances" aria-labelledby="programme-title">
+  <div class="section-heading">
+    <div>
+      <h2 id="programme-title">À l’affiche</h2>
+      <p>{{ day|date:"l j F Y"|capfirst }}</p>
+    </div>
+    <form method="get" action="{% url 'programme' %}#seances" class="filters date-picker">
+      <label class="sr-only" for="programme-date">Choisir une date</label>
+      <input id="programme-date" type="date" name="date" value="{{ day|date:'Y-m-d' }}" required>
+      <button type="submit" class="button secondary">Afficher</button>
+    </form>
+  </div>
+  <nav class="day-strip" aria-label="Dates du programme">
+    {% for date_option in dates %}
+      <a class="day{% if date_option == day %} active{% endif %}" {% if date_option == day %}aria-current="date"{% endif %} href="?date={{ date_option|date:'Y-m-d' }}#seances">
+        <span>{{ date_option|date:"D" }}</span><strong>{{ date_option|date:"j M" }}</strong>
+      </a>
+    {% endfor %}
+  </nav>
+  <div class="film-grid">
+    {% for film, screenings in films %}
+      <article class="film">
+        <div class="film-art art-{{ film.artwork }}" aria-hidden="true"></div>
+        <div class="film-copy">
+          <p class="film-meta">{{ film.genre }} · {{ film.duration }} min</p>
+          <h3>{{ film.title }}</h3>
+          <div class="screening-list">
+            {% for screening in screenings %}
+              {% include "_programme_slot.html" %}
+            {% endfor %}
+          </div>
+        </div>
+      </article>
+    {% empty %}
+      <p class="empty">Aucune séance publiée pour cette date.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
