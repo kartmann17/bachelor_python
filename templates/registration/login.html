@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Connexion · Le Grand Cinéma{% endblock %}
+{% block content %}
+<section class="wrap shell">
+  <h1 class="page-title">Connexion</h1>
+  <div class="panel narrow">
+    <form method="post" class="stack">
+      {% csrf_token %}
+      {{ form.as_p }}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      <button class="button" type="submit">Se connecter</button>
+      <p>Première visite ? <a href="{% url 'signup' %}">Créer un compte</a></p>
+    </form>
+  </div>
+</section>
+{% endblock %}

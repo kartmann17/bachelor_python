@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Ma réservation · Le Grand Cinéma{% endblock %}
+{% block content %}
+<section class="wrap shell">
+  <h1 class="page-title">Ma réservation</h1>
+  <div class="panel narrow">
+    <h2>{{ booking.screening.film }}</h2>
+    <span class="badge">{{ booking.get_status_display }}</span>
+    <dl class="details">
+      <dt>Référence</dt><dd><code>{{ booking.reference }}</code></dd>
+      <dt>Séance</dt><dd>{{ booking.screening.starts_at|date:"l j F à H:i"|capfirst }}</dd>
+      <dt>Salle</dt><dd>{{ booking.screening.room }}</dd>
+      <dt>Places</dt><dd>{{ booking.quantity }}</dd>
+      <dt>Total</dt><dd>{{ booking.total }} €</dd>
+    </dl>
+    {% block booking_extra %}{% endblock %}
+  </div>
+</section>
+{% endblock %}
