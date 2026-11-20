@@ -1,0 +1,4 @@
+<nav class="sublinks" aria-label="Espace équipe">
+  <a href="{% url 'workspace' %}">Espace équipe</a>
+  {% if guichet %}<a href="{% url 'desk_sale' %}">Vente au guichet</a>{% endif %}
+</nav>

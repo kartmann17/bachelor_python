@@ -17,11 +17,15 @@ def has_role(user, *roles):
 
 
 def requires_role(role):
+    return requires_any_role(role)
+
+
+def requires_any_role(*roles):
     def decorate(view):
         @login_required
         @wraps(view)
         def wrapped(request, *args, **kwargs):
-            if not has_role(request.user, role):
+            if not has_role(request.user, *roles):
                 raise PermissionDenied
             return view(request, *args, **kwargs)
 

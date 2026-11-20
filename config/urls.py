@@ -2,7 +2,7 @@ from django.contrib.auth import views as auth_views
 from django.http import HttpResponse
 from django.urls import path
 
-from cinema import programme, spectator
+from cinema import programme, spectator, staff
 from cinema.api import api
 
 
@@ -20,5 +20,8 @@ urlpatterns = [
     path("mes-reservations/", spectator.my_bookings, name="my_bookings"),
     path("mes-reservations/<uuid:reference>/", spectator.booking_detail, name="booking_detail"),
     path("billets/<uuid:reference>/", spectator.download_ticket, name="download_ticket"),
+    path("gestion/", staff.workspace, name="workspace"),
+    path("gestion/guichet/", staff.desk_sale, name="desk_sale"),
+    path("gestion/guichet/<uuid:reference>/", staff.desk_receipt, name="desk_receipt"),
     path("api/", api.urls),
 ]
