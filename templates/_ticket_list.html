@@ -1,0 +1,9 @@
+<h3>Billets numériques</h3>
+<ul class="ticket-list">
+  {% for ticket in booking.tickets.all %}
+    <li>
+      <span>Place {{ forloop.counter }} <small class="muted">{{ booking.get_status_display }}</small></span>
+      <a class="button secondary" href="{% url 'download_ticket' ticket.reference %}" aria-label="Télécharger le billet PDF de la place {{ forloop.counter }}">Télécharger le PDF</a>
+    </li>
+  {% endfor %}
+</ul>

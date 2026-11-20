@@ -13,7 +13,7 @@
       <dt>Places</dt><dd>{{ booking.quantity }}</dd>
       <dt>Total</dt><dd>{{ booking.total }} €</dd>
     </dl>
-    {% block booking_extra %}{% endblock %}
+    {% block booking_extra %}{% include '_ticket_list.html' %}{% endblock %}
   </div>
 </section>
 {% endblock %}
