@@ -5,13 +5,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods, require_safe
 
 from .access import GUICHET, has_role
 from .inventory import with_inventory
 from .models import Reservation, Screening, Ticket
-from .reservations import BookingError, payment_deadline, reserve
+from .reservations import PAYMENT_LOCATION, BookingError, payment_deadline, reserve
 from .ticket_pdf import ticket_pdf
 from .web_forms import BookingForm
 
@@ -51,7 +52,8 @@ def book(request, screening_id):
         else:
             status = 400
     return render(request, "book.html", {
-        "form": form, "screening": screening, "payment_deadline": payment_deadline(screening),
+        "form": form, "screening": screening, "payment_deadline": payment_deadline(screening), "payment_location": PAYMENT_LOCATION,
+        "can_book": payment_deadline(screening) > timezone.now() and screening.available > 0,
     }, status=status)
 
 
@@ -63,7 +65,7 @@ def booking_detail(request, reference):
         Reservation.objects.select_related("screening__film", "screening__room").prefetch_related("tickets"),
         reference=reference, customer=request.user,
     )
-    return render(request, "booking_detail.html", {"booking": booking})
+    return render(request, "booking_detail.html", {"booking": booking, "payment_location": PAYMENT_LOCATION})
 
 
 @login_required

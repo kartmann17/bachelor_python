@@ -106,6 +106,16 @@ class Reservation(models.Model):
         ]
 
     @property
+    def effective_status(self):
+        if self.status == self.Status.RESERVED and self.expires_at <= timezone.now():
+            return self.Status.EXPIRED
+        return self.status
+
+    @property
+    def effective_label(self):
+        return self.Status(self.effective_status).label
+
+    @property
     def total(self):
         return self.quantity * self.unit_price
 
