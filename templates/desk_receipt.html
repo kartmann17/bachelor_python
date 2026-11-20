@@ -1,2 +1,12 @@
 {% extends "booking_detail.html" %}
-{% block booking_extra %}{% include "_ticket_list.html" %}{% endblock %}
+{% block booking_extra %}
+  {% if booking.effective_status == 'reserved' %}
+    <form method="post" action="{% url 'desk_pay' booking.reference %}">
+      {% csrf_token %}
+      <button type="submit">Enregistrer le règlement de {{ booking.total }} €</button>
+    </form>
+  {% elif booking.effective_status == 'expired' %}
+    <p class="notice error">Cette réservation a expiré. Les places ont été libérées.</p>
+  {% endif %}
+  {% include "_ticket_list.html" %}
+{% endblock %}

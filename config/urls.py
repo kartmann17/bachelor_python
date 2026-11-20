@@ -22,6 +22,8 @@ urlpatterns = [
     path("billets/<uuid:reference>/", spectator.download_ticket, name="download_ticket"),
     path("gestion/", staff.workspace, name="workspace"),
     path("gestion/guichet/", staff.desk_sale, name="desk_sale"),
+    path("gestion/guichet/rechercher/", staff.desk_lookup, name="desk_lookup"),
+    path("gestion/guichet/<uuid:reference>/regler/", staff.desk_pay, name="desk_pay"),
     path("gestion/guichet/<uuid:reference>/", staff.desk_receipt, name="desk_receipt"),
     path("api/", api.urls),
 ]

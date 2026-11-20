@@ -71,3 +71,31 @@ def reserve(*, screening_id, user, quantity, request_key, channel=Reservation.Ch
     Ticket.objects.bulk_create([Ticket(reservation=booking) for _ in range(quantity)])
     logger.info("reservation_created channel=%s screening=%s quantity=%s", channel, screening_id, quantity)
     return booking, True
+
+
+def locked_booking(reference):
+    # A single lock order: screening before any mutation of a reservation or ticket.
+    screening_id = Reservation.objects.filter(reference=reference).values_list("screening_id", flat=True).first()
+    if screening_id is None:
+        raise BookingError("Référence de réservation introuvable.", status=404)
+    Screening.objects.select_for_update().get(pk=screening_id)
+    return Reservation.objects.select_for_update(of=("self",)).select_related("screening").get(reference=reference)
+
+
+@transaction.atomic
+def register_payment(reference):
+    booking = locked_booking(reference)
+    if booking.effective_status == Reservation.Status.EXPIRED:
+        raise BookingError("Cette réservation a expiré. Les places ont été libérées.")
+    if booking.screening.status != Screening.Status.PUBLISHED or booking.status == Reservation.Status.CANCELLED:
+        raise BookingError("Cette réservation a été annulée.")
+    if booking.status == Reservation.Status.PAID:
+        return False
+    now = timezone.now()
+    if booking.expires_at <= now:
+        raise BookingError("Cette réservation a expiré. Les places ont été libérées.")
+    booking.status = Reservation.Status.PAID
+    booking.paid_at = now
+    booking.save(update_fields=["status", "paid_at"])
+    logger.info("payment_registered screening=%s", booking.screening_id)
+    return True

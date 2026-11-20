@@ -4,7 +4,7 @@
 <section class="wrap shell">
   <h1 class="page-title">Espace équipe</h1>
   <div class="staff-grid">
-    {% if guichet %}<a class="panel staff-card" href="{% url 'desk_sale' %}"><h2>Vente au guichet</h2><span>Enregistrer une vente et éditer les billets.</span></a>{% endif %}
+    {% if guichet %}<a class="panel staff-card" href="{% url 'desk_sale' %}"><h2>Vente au guichet</h2><span>Enregistrer une vente et éditer les billets.</span></a><a class="panel staff-card" href="{% url 'desk_lookup' %}"><h2>Réservations</h2><span>Retrouver une référence et enregistrer son règlement.</span></a>{% endif %}
     {% block staff_tiles %}{% endblock %}
   </div>
 </section>
