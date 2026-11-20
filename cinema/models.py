@@ -60,6 +60,10 @@ class Screening(models.Model):
         ]
 
     @property
+    def starts_at_local_date(self):
+        return timezone.localdate(self.starts_at).isoformat()
+
+    @property
     def available(self):
         return max(0, self.capacity - self.allocated)
 

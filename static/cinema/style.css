@@ -113,3 +113,4 @@ code { overflow-wrap: anywhere; }
 .staff-card { text-decoration: none; }
 .staff-card h2 { font-size: 1.7rem; }
 .staff-card span { color: var(--muted); }
+.section-table { margin-top: 16px; }
