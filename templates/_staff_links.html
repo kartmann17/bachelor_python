@@ -1,4 +1,4 @@
 <nav class="sublinks" aria-label="Espace équipe">
   <a href="{% url 'workspace' %}">Espace équipe</a>
-  {% if guichet %}<a href="{% url 'desk_sale' %}">Vente au guichet</a>{% endif %}
+  {% if guichet %}<a href="{% url 'desk_sale' %}">Vente au guichet</a><a href="{% url 'desk_lookup' %}">Rechercher une réservation</a>{% endif %}
 </nav>

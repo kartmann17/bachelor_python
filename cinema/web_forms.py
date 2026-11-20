@@ -28,3 +28,11 @@ class DeskSaleForm(BookingForm):
             # A retry still reaches the service if the session has since started.
             queryset = Screening.objects.all().select_related("film", "room")
         self.fields["screening"].queryset = queryset
+
+
+class BookingLookupForm(forms.Form):
+    reference = forms.UUIDField(
+        label="Référence de la réservation",
+        widget=forms.TextInput(attrs={"autocomplete": "off", "spellcheck": "false"}),
+        error_messages={"invalid": "Ce format de référence n’est pas valide."},
+    )
