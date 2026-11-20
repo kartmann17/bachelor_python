@@ -53,3 +53,10 @@ class CheckTicketForm(BookingLookupForm):
         self.fields["screening"].queryset = Screening.objects.filter(
             status=Screening.Status.PUBLISHED, starts_at__date=today,
         ).select_related("film", "room")
+
+
+class ScreeningForm(forms.ModelForm):
+    class Meta:
+        model = Screening
+        fields = ["film", "room", "starts_at", "capacity", "price"]
+        widgets = {"starts_at": forms.DateTimeInput(format="%Y-%m-%dT%H:%M", attrs={"type": "datetime-local"})}
