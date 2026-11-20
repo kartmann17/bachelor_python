@@ -114,3 +114,6 @@ code { overflow-wrap: anywhere; }
 .staff-card h2 { font-size: 1.7rem; }
 .staff-card span { color: var(--muted); }
 .section-table { margin-top: 16px; }
+.cancel-booking { margin-block: 16px; }
+.cancel-booking summary { cursor: pointer; color: var(--muted); }
+.cancel-booking p { margin-block: 8px; }

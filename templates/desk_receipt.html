@@ -8,5 +8,15 @@
   {% elif booking.effective_status == 'expired' %}
     <p class="notice error">Cette réservation a expiré. Les places ont été libérées.</p>
   {% endif %}
+  {% if booking.screening.future and booking.effective_status == 'reserved' or booking.screening.future and booking.effective_status == 'paid' %}
+    <details class="cancel-booking">
+      <summary>Annuler cette réservation</summary>
+      <p>Les billets seront invalidés. Si un règlement a été encaissé, traitez le remboursement au guichet.</p>
+      <form method="post" action="{% url 'desk_cancel' booking.reference %}">
+        {% csrf_token %}
+        <button class="button secondary" type="submit">Confirmer l’annulation</button>
+      </form>
+    </details>
+  {% endif %}
   {% include "_ticket_list.html" %}
 {% endblock %}

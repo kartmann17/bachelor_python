@@ -13,6 +13,9 @@ from .programme import selected_date
 from .web_forms import RoomFilter
 
 
+SATURATION_PERCENT = 90
+
+
 def occupancy(day, room=None):
     checkins = (
         Ticket.objects.filter(reservation__screening_id=OuterRef("pk"), used_at__isnull=False)
@@ -26,6 +29,7 @@ def occupancy(day, room=None):
     )
     for screening in screenings:
         screening.fill_rate = Decimal(100 * screening.admitted) / screening.capacity
+        screening.saturated = screening.allocated * 100 >= screening.capacity * SATURATION_PERCENT
         yield screening
 
 
@@ -36,4 +40,4 @@ def dashboard(request):
     day = selected_date(request)
     form = RoomFilter(request.GET or None)
     room = form.cleaned_data.get("room") if form.is_valid() else None
-    return render(request, "dashboard.html", {"day": day, "form": form, "screenings": list(occupancy(day, room))})
+    return render(request, "dashboard.html", {"day": day, "form": form, "screenings": list(occupancy(day, room)), "threshold": SATURATION_PERCENT})

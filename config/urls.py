@@ -31,5 +31,6 @@ urlpatterns = [
     path("gestion/programmation/<int:screening_id>/publier/", management_views.schedule_publish, name="schedule_publish"),
     path("gestion/programmation/<int:screening_id>/modifier/", management_views.schedule_edit, name="schedule_edit"),
     path("gestion/remplissage/", reporting.dashboard, name="dashboard"),
+    path("gestion/guichet/<uuid:reference>/annuler/", staff.desk_cancel, name="desk_cancel"),
     path("api/", api.urls),
 ]

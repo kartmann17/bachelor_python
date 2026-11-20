@@ -9,7 +9,7 @@ from django.views.decorators.http import require_POST, require_http_methods, req
 
 from .access import ACCUEIL, EXPLOITATION, GUICHET, PROGRAMMATION, requires_any_role, requires_role
 from .models import Reservation
-from .reservations import PAYMENT_LOCATION, BookingError, check_ticket, register_payment, reserve
+from .reservations import PAYMENT_LOCATION, BookingError, cancel_booking, check_ticket, register_payment, reserve
 from .web_forms import BookingLookupForm, CheckTicketForm, DeskSaleForm
 
 
@@ -113,3 +113,19 @@ def check_in(request):
         "title": "Contrôle des billets", "form": form, "submit": "Valider le billet",
         "description": "Choisissez la séance du jour, puis saisissez la référence ou utilisez un lecteur QR en mode clavier.",
     }, status=status)
+
+
+@requires_role(GUICHET)
+@never_cache
+@require_POST
+def desk_cancel(request, reference):
+    try:
+        if cancel_booking(reference, request.user):
+            messages.success(request, "Réservation annulée. Les places ont été libérées.")
+        else:
+            messages.info(request, "Cette réservation est déjà annulée.")
+    except BookingError as exc:
+        if exc.status == 404:
+            raise Http404(str(exc)) from exc
+        messages.error(request, str(exc))
+    return redirect("desk_receipt", reference=reference)
