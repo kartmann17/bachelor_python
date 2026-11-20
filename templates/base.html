@@ -1,0 +1,40 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Consultez les séances et réservez vos places au Grand Cinéma.">
+  <title>{% block title %}Le Grand Cinéma{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
+</head>
+<body>
+  <a class="skip" href="#contenu">Aller au contenu</a>
+  <header class="header">
+    <div class="wrap header-inner">
+      <a class="brand" href="{% url 'programme' %}">
+        <span aria-hidden="true" class="brand-mark">▸</span>
+        <span>Le Grand<span class="brand-accent"> Cinéma</span></span>
+      </a>
+      {% block navigation %}
+      <nav aria-label="Navigation principale">
+        <a href="{% url 'programme' %}#seances">Programme</a>
+      </nav>
+      {% endblock %}
+    </div>
+  </header>
+  {% if messages %}
+    <div class="wrap flash" aria-live="polite">
+      {% for message in messages %}<p class="notice {{ message.tags }}">{{ message }}</p>{% endfor %}
+    </div>
+  {% endif %}
+  <main id="contenu">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="footer wrap">
+    <a class="brand" href="{% url 'programme' %}">Le Grand Cinéma</a>
+    <span>Billetterie et programmation</span>
+  </footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
