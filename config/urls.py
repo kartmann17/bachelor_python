@@ -25,5 +25,6 @@ urlpatterns = [
     path("gestion/guichet/rechercher/", staff.desk_lookup, name="desk_lookup"),
     path("gestion/guichet/<uuid:reference>/regler/", staff.desk_pay, name="desk_pay"),
     path("gestion/guichet/<uuid:reference>/", staff.desk_receipt, name="desk_receipt"),
+    path("gestion/controle/", staff.check_in, name="check_in"),
     path("api/", api.urls),
 ]
