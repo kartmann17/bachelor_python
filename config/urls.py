@@ -19,5 +19,6 @@ urlpatterns = [
     path("seances/<int:screening_id>/reserver/", spectator.book, name="book"),
     path("mes-reservations/", spectator.my_bookings, name="my_bookings"),
     path("mes-reservations/<uuid:reference>/", spectator.booking_detail, name="booking_detail"),
+    path("billets/<uuid:reference>/", spectator.download_ticket, name="download_ticket"),
     path("api/", api.urls),
 ]

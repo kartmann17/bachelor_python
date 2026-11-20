@@ -3,13 +3,16 @@ import uuid
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods, require_safe
 
+from .access import GUICHET, has_role
 from .inventory import with_inventory
-from .models import Reservation, Screening
+from .models import Reservation, Screening, Ticket
 from .reservations import BookingError, payment_deadline, reserve
+from .ticket_pdf import ticket_pdf
 from .web_forms import BookingForm
 
 
@@ -69,3 +72,14 @@ def booking_detail(request, reference):
 def my_bookings(request):
     bookings = Reservation.objects.filter(customer=request.user).select_related("screening__film")
     return render(request, "my_bookings.html", {"bookings": bookings})
+
+
+@login_required
+@never_cache
+@require_safe
+def download_ticket(request, reference):
+    queryset = Ticket.objects.select_related("reservation__screening__film", "reservation__screening__room")
+    if not has_role(request.user, GUICHET):
+        queryset = queryset.filter(reservation__customer=request.user)
+    ticket = get_object_or_404(queryset, reference=reference)
+    return FileResponse(ticket_pdf(ticket), as_attachment=True, filename=f"billet-{ticket.reference}.pdf")
