@@ -36,3 +36,20 @@ class BookingLookupForm(forms.Form):
         widget=forms.TextInput(attrs={"autocomplete": "off", "spellcheck": "false"}),
         error_messages={"invalid": "Ce format de référence n’est pas valide."},
     )
+
+
+class CheckTicketForm(BookingLookupForm):
+    reference = forms.UUIDField(
+        label="Référence du billet ou lecture QR",
+        widget=forms.TextInput(attrs={"autocomplete": "off", "spellcheck": "false"}),
+        error_messages={"invalid": "Ce format de référence de billet n’est pas valide."},
+    )
+    screening = forms.ModelChoiceField(label="Séance contrôlée", queryset=Screening.objects.none())
+    field_order = ["screening", "reference"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        today = timezone.localdate()
+        self.fields["screening"].queryset = Screening.objects.filter(
+            status=Screening.Status.PUBLISHED, starts_at__date=today,
+        ).select_related("film", "room")

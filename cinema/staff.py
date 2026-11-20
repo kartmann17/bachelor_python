@@ -3,13 +3,14 @@ import uuid
 from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST, require_http_methods, require_safe
 
 from .access import ACCUEIL, EXPLOITATION, GUICHET, PROGRAMMATION, requires_any_role, requires_role
 from .models import Reservation
-from .reservations import PAYMENT_LOCATION, BookingError, register_payment, reserve
-from .web_forms import BookingLookupForm, DeskSaleForm
+from .reservations import PAYMENT_LOCATION, BookingError, check_ticket, register_payment, reserve
+from .web_forms import BookingLookupForm, CheckTicketForm, DeskSaleForm
 
 
 @requires_any_role(GUICHET, ACCUEIL, PROGRAMMATION, EXPLOITATION)
@@ -85,3 +86,30 @@ def desk_pay(request, reference):
             raise Http404(str(exc)) from exc
         messages.error(request, str(exc))
     return redirect("desk_receipt", reference=reference)
+
+
+@requires_role(ACCUEIL)
+@never_cache
+@require_http_methods(["GET", "HEAD", "POST"])
+def check_in(request):
+    form = CheckTicketForm(
+        request.POST if request.method == "POST" else None,
+        initial={"screening": request.GET.get("screening")},
+    )
+    status = 200
+    if request.method == "POST":
+        if form.is_valid():
+            screening = form.cleaned_data["screening"]
+            try:
+                check_ticket(form.cleaned_data["reference"], screening.pk, request.user)
+                messages.success(request, "Billet validé. Entrée autorisée.")
+                return redirect(f"{reverse('check_in')}?screening={screening.pk}")
+            except BookingError as exc:
+                form.add_error(None, str(exc))
+                status = exc.status
+        else:
+            status = 400
+    return render(request, "staff_form.html", {
+        "title": "Contrôle des billets", "form": form, "submit": "Valider le billet",
+        "description": "Choisissez la séance du jour, puis saisissez la référence ou utilisez un lecteur QR en mode clavier.",
+    }, status=status)

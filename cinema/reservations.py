@@ -99,3 +99,31 @@ def register_payment(reference):
     booking.save(update_fields=["status", "paid_at"])
     logger.info("payment_registered screening=%s", booking.screening_id)
     return True
+
+
+@transaction.atomic
+def check_ticket(reference, screening_id, agent):
+    screening = Screening.objects.select_for_update().get(pk=screening_id)
+    ticket = (
+        Ticket.objects.select_related("reservation")
+        .filter(reference=reference)
+        .first()
+    )
+    if ticket is None:
+        raise BookingError("Ce billet est introuvable.", status=404)
+    booking = ticket.reservation
+    if booking.screening_id != screening.pk:
+        raise BookingError("Ce billet correspond à une autre séance.")
+    if ticket.used_at:
+        raise BookingError("Ce billet a déjà été utilisé.")
+    if booking.status == Reservation.Status.CANCELLED or screening.status != Screening.Status.PUBLISHED:
+        raise BookingError("Ce billet a été annulé.")
+    if booking.effective_status == Reservation.Status.EXPIRED:
+        raise BookingError("Ce billet a expiré.")
+    if booking.status != Reservation.Status.PAID:
+        raise BookingError("Ce billet n’est pas réglé.")
+    ticket.used_at = timezone.now()
+    ticket.checked_by = agent
+    ticket.save(update_fields=["used_at", "checked_by"])
+    logger.info("ticket_checked screening=%s", screening.pk)
+    return ticket
